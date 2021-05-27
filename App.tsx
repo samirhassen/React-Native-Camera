@@ -3,17 +3,10 @@ import React, { StrictMode, useState, useEffect } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { Camera } from 'expo-camera';
 
-
-camera: Camera;
-
-function snapPic(){
-  (async () => {
-    })();
-}
-
 export default function App() {
 const [hasPermission, setPermission] = useState(false);
 const [selectedCamera, setSelectedCamera] = useState(Camera.Constants.Type.back);
+const [camera, setCamera] = useState(null);
 
 useEffect(() => {
   (async () => { 
@@ -22,20 +15,27 @@ useEffect(() => {
   })();
 }, [])
 
+const SnapPic = async () => {
+  if (camera) {
+    let photo = await camera.takePictureAsync();
+    console.log(photo);
+  }
+}
+
 if(!hasPermission) {
   return <View><Text>If we cant use your camera u cant use us</Text></View>;
 }
 
   return (
     <View style={styles.container}>
-      <Camera style={styles.camera} type={selectedCamera}>
+      <StatusBar style="auto" />
+      <Camera style={styles.camera} type={selectedCamera} ref={ref => setCamera(ref)}>
         <View style={styles.textContainer}>
-          <TouchableOpacity onPress={snapPic}>
-            <Text style={styles.snapText}>Snap Pic</Text>
+          <TouchableOpacity>
+            <Text style={styles.snapText} onPress={SnapPic}>Snap Pic</Text>
           </TouchableOpacity>
           </View> 
       </Camera>
-      <StatusBar style="auto" />
     </View>
   );
 }
